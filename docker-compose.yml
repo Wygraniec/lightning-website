@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: Website
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/var/www/html
+    ports:
+      - "8100:80"
+    depends_on:
+      - db
+
+  db:
+    container_name: Database
+    image: mariadb:10.5
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: SuperTajneIBezpieczneHasloRootaDoBazyDanych
+      MYSQL_DATABASE: lightning
+      MYSQL_USER: website
+      MYSQL_PASSWORD: SuperTajneHasloDoBazy
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    container_name: DatabaseInterface
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: db
+    depends_on:
+      - db
+
+volumes:
+  db_data:
