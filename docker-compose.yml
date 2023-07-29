@@ -18,10 +18,10 @@ services:
     image: mariadb:10.5
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: SuperTajneIBezpieczneHasloRootaDoBazyDanych
+      MYSQL_ROOT_PASSWORD: Cnz5QdnLmWQUPsw5hfQCYfny25HqcSIU2rCxd85qAewxcBJTIr
       MYSQL_DATABASE: lightning
       MYSQL_USER: website
-      MYSQL_PASSWORD: SuperTajneHasloDoBazy
+      MYSQL_PASSWORD: SrXCyHIg8fBTWnYvUu6T
     volumes:
       - db_data:/var/lib/mysql
 
