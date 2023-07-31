@@ -18,6 +18,7 @@ final class DatabaseConnector {
             hostname: $config['host'],
             username: $config['username'],
             password: $config['password'],
+            database: $config['database']
         );
     }
 
@@ -139,7 +140,7 @@ final class DatabaseConnector {
     }
 
     public function __tostring(): string {
-        return $this->database->error? "Connected successfully" : "Connection error: " . $this->database->error;
+        return $this->database->connect_error ?? "Connected successfully";
     }
 
 }

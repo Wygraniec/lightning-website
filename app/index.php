@@ -5,7 +5,9 @@
     <title>Szkoła Języka Angielskiego Lightning</title>
 </head>
 <body>
-    <?php echo "Hello World!" ?>
+<?php
+    echo "Hello world!";
+?>
 
 </body>
 </html>
