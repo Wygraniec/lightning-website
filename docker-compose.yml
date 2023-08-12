@@ -24,6 +24,8 @@ services:
       MYSQL_PASSWORD: SrXCyHIg8fBTWnYvUu6T
     volumes:
       - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
 
   phpmyadmin:
     container_name: DatabaseInterface

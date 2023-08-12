@@ -12,7 +12,7 @@ final class DatabaseConnector {
     private mysqli $database;
 
     private function __construct() {
-        $config = parse_ini_file("config.ini", true)['Database'];
+        $config = parse_ini_file("db_config.ini", true)['Database'];
 
         $this->database = @new mysqli(
             hostname: $config['host'],
@@ -23,18 +23,30 @@ final class DatabaseConnector {
     }
 
     public static function getSingleton(): DatabaseConnector {
-        if(!isset(DatabaseConnector::$singleton))
-            DatabaseConnector::$singleton = new DatabaseConnector();
+        if(!isset(self::$singleton))
+            self::$singleton = new DatabaseConnector();
 
-        return DatabaseConnector::$singleton;
+        return self::$singleton;
     }
 
     /**
+     * Executes the query that doesn't return any result
      * @param string $query SQL query which will be used, with '?' characters as parameters to be bound
      * @param mixed ...$params A variadic parameter containing every parameter which will be bound to the query <br>
      *                         It should contain at least the same number of elements as the count of '?' in the query <br>
      *                         If there happened to be more, they would be discarded
-     * @throws BadQueryStringException If the provided query is not an updating one
+     * @throws BadQueryStringException If the provided query is invalid
+     */
+    public function updateQuery(string $query, mixed ...$params): void {
+        $this->prepareQueryWithParams($query, ...$params)->execute();
+    }
+
+    /**
+     * Executes the query that returns a result
+     * @param string $query SQL query which will be used, with '?' characters as parameters to be bound
+     * @param mixed ...$params A variadic parameter containing every parameter which will be bound to the query <br>
+     *                         It should contain at least the same number of elements as the count of '?' in the query <br>
+     *                         If there happened to be more, they would be discarded
      * @throws BadQueryStringException If the provided query is invalid
      * @return Generator Values retrieved from the database
      */
@@ -60,7 +72,6 @@ final class DatabaseConnector {
             yield $row;
 
     }
-
 
     private function prepareQueryWithParams(string $query, mixed ...$params): mysqli_stmt {
         $stmt = $this->database->prepare($query);
@@ -99,48 +110,7 @@ final class DatabaseConnector {
         return 'b';
     }
 
-    /**
-     * @param string $query SQL query which will be used, with '?' characters as parameters to be bound
-     * @param mixed ...$params A variadic parameter containing every parameter which will be bound to the query <br>
-     *                         It should contain at least the same number of elements as the count of '?' in the query <br>
-     *                         If there happened to be more, they would be discarded
-     * @throws BadQueryStringException If the provided query is not an updating one
-     * @throws BadQueryStringException If the provided query is invalid
-    */
-    public function updateQuery(string $query, mixed ...$params): void {
-        $this->prepareQueryWithParams($query, ...$params)->execute();
-    }
-
-    /**
-     * @param string $query SQL query to be used with '?' characters as parameters to be bound
-     * @param mixed ...$params A variadic parameter containing every parameter which will be bound to the query <br>
-     *                         It should contain at least the same number of elements as the count of '?' in the query <br>
-     *                         If there happened to be more, they would be discarded
-     * @throws BadQueryStringException If the provided query is not an inserting one
-     * @throws BadQueryStringException If the provided query is invalid
-     */
-    public function insertQuery(string $query, mixed ...$params): void {
-        $this->prepareQueryWithParams($query, ...$params)->execute();
-    }
-
-    /**
-     * @param string $query SQL query to be used with '?' characters as parameters to be bound
-     * @param mixed ...$params A variadic parameter containing every parameter which will be bound to the query <br>
-     *                         It should contain at least the same number of elements as the count of '?' in the query <br>
-     *                         If there happened to be more, they would be discarded
-     * @throws BadQueryStringException If the provided query is not a deleting one
-     * @throws BadQueryStringException If the provided query is invalid
-     */
-    public function deleteQuery(string $query, mixed ...$params): void {
-        $this->prepareQueryWithParams($query, ...$params)->execute();
-    }
-
     public function __destruct() {
         $this->database->close();
     }
-
-    public function __tostring(): string {
-        return $this->database->connect_error ?? "Connected successfully";
-    }
-
 }
